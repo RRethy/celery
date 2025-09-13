@@ -1,0 +1,25 @@
+version: 2
+
+builds:
+  - id: celery
+    main: ./main.go
+    binary: celery
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+
+archives:
+  - builds: [celery]
+    format: tar.gz
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{- title .Os }}_{{ .Arch }}
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  use: github
+
+release:
+  github:
+    owner: rrethy
+    name: celery
