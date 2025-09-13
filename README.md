@@ -4,6 +4,10 @@ A Kubernetes Resource Model (KRM) YAML validator using Common Expression Languag
 
 ## Installation
 
+Prebuilt binaries are available on the [Releases](https://github.com/RRethy/celery/releases) page.
+
+Alternatively, you can install via `go install`:
+
 ```bash
 go install github.com/RRethy/celery@latest
 ```
@@ -175,16 +179,3 @@ The following variables are available in CEL expressions:
 # Cross-resource validation: Ensure Deployment has a corresponding Service
 --expression "object.kind != 'Deployment' || allObjects.exists(o, o.kind == 'Service' && o.metadata.name == object.metadata.name)"
 ```
-
-## Development
-
-```bash
-# Build binary into ./bin/celery
-make build-celery
-```
-
-## TODO
-
-- [ ] Package as an image for use with Kustomiza as a validator
-- [ ] Setup GH release automation
-- [ ] Setup GitHub Action for validation in CI
