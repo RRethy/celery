@@ -9,7 +9,7 @@ builds:
 
 archives:
   - builds: [celery]
-    format: tar.gz
+    formats: [tar.gz]
     name_template: >-
       {{ .ProjectName }}_{{ .Version }}_{{- title .Os }}_{{ .Arch }}
 
