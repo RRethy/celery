@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"sort"
 
-	apiv1 "github.com/RRethy/kube-tools/celery/api/v1"
-	"github.com/RRethy/kube-tools/celery/pkg/validator"
-	"github.com/RRethy/kube-tools/celery/pkg/yaml"
+	apiv1 "github.com/RRethy/celery/api/v1"
+	"github.com/RRethy/celery/pkg/validator"
+	"github.com/RRethy/celery/pkg/yaml"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/cli-runtime/pkg/genericiooptions"
 )

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	apiv1 "github.com/RRethy/kube-tools/celery/api/v1"
+	apiv1 "github.com/RRethy/celery/api/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -470,7 +470,6 @@ func TestTargetSelection(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			results, err := v.Validate(ctx, tt.inputFiles, tt.rules)
-
 			if err != nil {
 				t.Skipf("Skipping test %s: %v", tt.name, err)
 				return

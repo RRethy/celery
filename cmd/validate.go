@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/RRethy/kube-tools/celery/pkg/cli/validate"
+	"github.com/RRethy/celery/pkg/cli/validate"
 )
 
 const defaultWorkers = 128

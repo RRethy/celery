@@ -5,7 +5,7 @@ A Kubernetes Resource Model (KRM) YAML validator using Common Expression Languag
 ## Installation
 
 ```bash
-go install github.com/RRethy/kube-tools/celery@latest
+go install github.com/RRethy/celery@latest
 ```
 
 ## Usage
@@ -46,7 +46,7 @@ See the `fixtures/` directory for complete working examples including:
 Validation rules are defined as Kubernetes Resource Model (KRM) resources using the `ValidationRules` kind:
 
 ```yaml
-apiVersion: celery.rrethy.io/v1
+apiVersion: celery.io/v1
 kind: ValidationRules
 metadata:
   name: production-standards
@@ -68,7 +68,7 @@ spec:
 You can define multiple ValidationRules resources in a single file using YAML document separators:
 
 ```yaml
-apiVersion: celery.rrethy.io/v1
+apiVersion: celery.io/v1
 kind: ValidationRules
 metadata:
   name: deployment-standards
@@ -80,7 +80,7 @@ spec:
       target:
         kind: Deployment
 ---
-apiVersion: celery.rrethy.io/v1
+apiVersion: celery.io/v1
 kind: ValidationRules
 metadata:
   name: service-standards

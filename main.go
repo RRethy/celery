@@ -6,7 +6,7 @@ import (
 
 	"github.com/charmbracelet/fang"
 
-	"github.com/RRethy/kube-tools/celery/cmd"
+	"github.com/RRethy/celery/cmd"
 )
 
 func main() {

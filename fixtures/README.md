@@ -95,7 +95,7 @@ celery validate resources/cross-reference-resources.yaml --rule-file rules/cross
 
 ### Basic Structure
 ```yaml
-apiVersion: celery.rrethy.io/v1
+apiVersion: celery.io/v1
 kind: ValidationRules
 metadata:
   name: my-rules
