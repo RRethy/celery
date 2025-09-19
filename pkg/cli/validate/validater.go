@@ -144,19 +144,28 @@ func (v *Validater) displayResults(results []validator.ValidationResult) error {
 
 	for _, inputFile := range inputFiles {
 		ruleFiles := groupedResults[inputFile]
-		fmt.Fprintf(v.IOStreams.Out, "\n%s:\n", inputFile)
-
 		var ruleFileNames []string
 		for ruleFile := range ruleFiles {
 			ruleFileNames = append(ruleFileNames, ruleFile)
 		}
 		sort.Strings(ruleFileNames)
 
+		var printedInputFile bool
+		var printedRuleFile bool
 		for _, ruleFile := range ruleFileNames {
 			results := ruleFiles[ruleFile]
-			fmt.Fprintf(v.IOStreams.Out, "  From %s:\n", ruleFile)
 			for _, result := range results {
 				if !result.Valid {
+					if !printedInputFile {
+						fmt.Fprintf(v.IOStreams.Out, "\n%s:\n", inputFile)
+						printedInputFile = true
+					}
+
+					if !printedRuleFile {
+						fmt.Fprintf(v.IOStreams.Out, "  From %s:\n", ruleFile)
+						printedRuleFile = true
+					}
+
 					fmt.Fprintf(v.IOStreams.Out, "    ❌ [%s] %s/%s: %v\n", result.RuleName, result.ResourceKind, result.ResourceName, result.Err)
 				}
 			}
