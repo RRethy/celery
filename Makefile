@@ -18,7 +18,8 @@ tidy:
 	go mod tidy
 
 build:
-	go build ./...
+	mkdir -p bin
+	go build -o ./bin/celery .
 
 test:
 	go test ./...

@@ -1,12 +1,13 @@
 package cmd
 
 import (
+	"flag"
+
 	"github.com/spf13/cobra"
+	"k8s.io/klog/v2"
 )
 
-var (
-	version = "0.1.0"
-)
+var version = "1.0.0"
 
 var rootCmd = &cobra.Command{
 	Use:   "celery",
@@ -21,4 +22,10 @@ or query resource properties using CEL's expression language.`,
 
 func GetRootCmd() *cobra.Command {
 	return rootCmd
+}
+
+func init() {
+	klogFlags := flag.NewFlagSet("klog", flag.ExitOnError)
+	klog.InitFlags(klogFlags)
+	rootCmd.PersistentFlags().AddGoFlag(klogFlags.Lookup("v"))
 }

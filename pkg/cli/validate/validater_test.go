@@ -18,7 +18,6 @@ func TestValidaterValidate(t *testing.T) {
 		files             []string
 		celExpression     string
 		ruleFiles         []string
-		verbose           bool
 		targetKind        string
 		expectError       bool
 		expectInOutput    []string
@@ -50,31 +49,6 @@ func TestValidaterValidate(t *testing.T) {
 			celExpression: "object.spec.replicas >= 10", // Will fail
 			expectError:   true,
 			expectInOutput: []string{
-				"❌",
-			},
-		},
-		{
-			name: "verbose mode shows passes",
-			files: []string{
-				filepath.Join("..", "..", "..", "fixtures", "resources", "valid-deployment.yaml"),
-			},
-			celExpression: "true",
-			verbose:       true,
-			expectError:   false,
-			expectInOutput: []string{
-				"✅",
-			},
-		},
-		{
-			name: "non-verbose mode with all passes shows nothing",
-			files: []string{
-				filepath.Join("..", "..", "..", "fixtures", "resources", "valid-deployment.yaml"),
-			},
-			celExpression: "true",
-			verbose:       false,
-			expectError:   false,
-			notExpectInOutput: []string{
-				"✅",
 				"❌",
 			},
 		},
@@ -124,7 +98,6 @@ func TestValidaterValidate(t *testing.T) {
 				tt.files,
 				tt.celExpression,
 				tt.ruleFiles,
-				tt.verbose,
 				128, // maxWorkers
 				"",  // targetGroup
 				"",  // targetVersion
@@ -168,7 +141,6 @@ func TestDisplayResults(t *testing.T) {
 	tests := []struct {
 		name           string
 		results        []validator.ValidationResult
-		verbose        bool
 		expectError    bool
 		expectInOutput []string
 	}{
@@ -185,7 +157,6 @@ func TestDisplayResults(t *testing.T) {
 					Err:          assert.AnError,
 				},
 			},
-			verbose:     false,
 			expectError: true,
 			expectInOutput: []string{
 				"❌",
@@ -195,58 +166,8 @@ func TestDisplayResults(t *testing.T) {
 			},
 		},
 		{
-			name: "display success in verbose mode",
-			results: []validator.ValidationResult{
-				{
-					InputFile:    "test.yaml",
-					RuleFile:     "rules.yaml",
-					RuleName:     "test-rule",
-					ResourceKind: "Service",
-					ResourceName: "test-svc",
-					Valid:        true,
-				},
-			},
-			verbose:     true,
-			expectError: false,
-			expectInOutput: []string{
-				"✅",
-				"test-rule",
-				"Service/test-svc",
-			},
-		},
-		{
-			name: "mixed results with percentage",
-			results: []validator.ValidationResult{
-				{
-					InputFile:    "test.yaml",
-					RuleFile:     "rules.yaml",
-					RuleName:     "rule1",
-					ResourceKind: "Deployment",
-					ResourceName: "deploy1",
-					Valid:        true,
-				},
-				{
-					InputFile:    "test.yaml",
-					RuleFile:     "rules.yaml",
-					RuleName:     "rule2",
-					ResourceKind: "Deployment",
-					ResourceName: "deploy1",
-					Valid:        false,
-					Err:          assert.AnError,
-				},
-			},
-			verbose:     true,
-			expectError: true,
-			expectInOutput: []string{
-				"✅",
-				"❌",
-				"validation failed: 1/2 checks failed (50.0% failure rate)",
-			},
-		},
-		{
 			name:           "no results",
 			results:        []validator.ValidationResult{},
-			verbose:        false,
 			expectError:    false,
 			expectInOutput: []string{},
 		},
@@ -261,7 +182,7 @@ func TestDisplayResults(t *testing.T) {
 				},
 			}
 
-			err := v.displayResults(tt.results, tt.verbose)
+			err := v.displayResults(tt.results)
 
 			if tt.expectError {
 				assert.Error(t, err)
@@ -332,7 +253,6 @@ func TestValidaterGlobExpansion(t *testing.T) {
 		[]string{filepath.Join("..", "..", "..", "fixtures", "resources", "valid-deployment.yaml")},
 		"",
 		[]string{"/nonexistent/path/*.yaml"}, // Should be treated as literal filename
-		false,
 		128,
 		"", "", "", "", "", "", "",
 	)
@@ -380,7 +300,7 @@ func TestValidaterSortedOutput(t *testing.T) {
 		},
 	}
 
-	err := v.displayResults(results, false)
+	err := v.displayResults(results)
 	require.Error(t, err) // Should error because there are failures
 
 	output := out.String()

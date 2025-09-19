@@ -21,7 +21,6 @@ func (v *Validater) Validate(
 	files []string,
 	celExpression string,
 	ruleFiles []string,
-	verbose bool,
 	maxWorkers int,
 	targetGroup string,
 	targetVersion string,
@@ -67,7 +66,7 @@ func (v *Validater) Validate(
 		return fmt.Errorf("validation failed: %w", err)
 	}
 
-	return v.displayResults(results, verbose)
+	return v.displayResults(results)
 }
 
 func createInlineValidationRule(expression string, targetGroup string, targetVersion string, targetKind string, targetName string, targetNamespace string, targetLabelSelector string, targetAnnotationSelector string) apiv1.ValidationRules {
@@ -105,7 +104,7 @@ func createInlineValidationRule(expression string, targetGroup string, targetVer
 	return rule
 }
 
-func (v *Validater) displayResults(results []validator.ValidationResult, verbose bool) error {
+func (v *Validater) displayResults(results []validator.ValidationResult) error {
 	type ruleResult struct {
 		RuleName     string
 		ResourceKind string
@@ -115,18 +114,11 @@ func (v *Validater) displayResults(results []validator.ValidationResult, verbose
 	}
 
 	groupedResults := make(map[string]map[string][]ruleResult)
-	hasFailures := false
-	totalValidations := len(results)
-	failureCount := 0
+	var failureCount int
 
 	for _, result := range results {
 		if !result.Valid {
-			hasFailures = true
 			failureCount++
-		}
-
-		if !verbose && result.Valid {
-			continue
 		}
 
 		if groupedResults[result.InputFile] == nil {
@@ -142,10 +134,6 @@ func (v *Validater) displayResults(results []validator.ValidationResult, verbose
 				Err:          result.Err,
 			},
 		)
-	}
-
-	if !hasFailures && !verbose {
-		return nil
 	}
 
 	var inputFiles []string
@@ -168,18 +156,21 @@ func (v *Validater) displayResults(results []validator.ValidationResult, verbose
 			results := ruleFiles[ruleFile]
 			fmt.Fprintf(v.IOStreams.Out, "  From %s:\n", ruleFile)
 			for _, result := range results {
-				if result.Valid {
-					fmt.Fprintf(v.IOStreams.Out, "    ✅ [%s] %s/%s\n", result.RuleName, result.ResourceKind, result.ResourceName)
-				} else {
+				if !result.Valid {
 					fmt.Fprintf(v.IOStreams.Out, "    ❌ [%s] %s/%s: %v\n", result.RuleName, result.ResourceKind, result.ResourceName, result.Err)
 				}
 			}
 		}
 	}
 
-	if hasFailures {
-		failurePercentage := float64(failureCount) / float64(totalValidations) * 100
-		return fmt.Errorf("\nvalidation failed: %d/%d checks failed (%.1f%% failure rate)", failureCount, totalValidations, failurePercentage)
+	if failureCount == 0 {
+		return nil
 	}
-	return nil
+
+	return fmt.Errorf(
+		"validation failed: %d/%d checks failed (%.1f%% failure rate)",
+		failureCount,
+		len(results),
+		float64(failureCount)/float64(len(results))*100,
+	)
 }
